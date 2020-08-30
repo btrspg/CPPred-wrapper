@@ -2,7 +2,7 @@ FROM ubuntu:18.04
 MAINTAINER CHEN Yuelong <yuelong.chen.btr@gmail.com>
 
 
-ARG depends="build-essential python3 python3-dev python3-pip"
+ARG depends="wget build-essential python3 python3-dev python3-pip"
 
 RUN apt update && apt install -y $depends
 

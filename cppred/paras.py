@@ -15,7 +15,7 @@ def get_model_range_hexamer(species='Human'):
     else:
         raise ValueError('species can only be human or integrated, not ' + species)
 
-    m_f = pkg_resources.resource_dir(__name__, 'data/{prefix}.model'.format(prefix=prefix))
-    r_f = pkg_resources.resource_dir(__name__, 'data/{prefix}.range'.format(prefix=prefix))
-    h_f = pkg_resources.resource_dir(__name__, 'data/{prefix}_Hexamer.tsv'.format(prefix=prefix))
+    m_f = pkg_resources.resource_filename(__name__, 'data/{prefix}.model'.format(prefix=prefix))
+    r_f = pkg_resources.resource_filename(__name__, 'data/{prefix}.range'.format(prefix=prefix))
+    h_f = pkg_resources.resource_filename(__name__, 'data/{prefix}_Hexamer.tsv'.format(prefix=prefix))
     return m_f, r_f, h_f
