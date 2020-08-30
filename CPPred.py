@@ -60,10 +60,10 @@ def output_feature(seq_file, hex_file, species):
                                         [seqid, Cov, inte_fe, GC, insta_fe, Len, T0, fickett_fe, G2, C3, PI_fe, A3, C1,
                                          G3, hexamer, TG, G1, TC, A0, A1, AC, C2, G0, T4, C0, A4, G, A2, T, T3, G4, C4,
                                          gra_fe, T2, AG, AT, T1, A, C])) + "\n")
-        tmp.write(out_label)
+        tmp.write(str(out_label)+'\n')
         for label, item in enumerate(tem):
-            tmp.write(str(label + 1) + ':' + str(item))
-        tmp.write()
+            tmp.write(str(label + 1) + ':' + str(item)+'\n')
+        tmp.write('\n')
     tmp.close()
 
 
