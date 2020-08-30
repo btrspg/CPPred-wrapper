@@ -11,9 +11,9 @@ WORKDIR /opt/tmp/
 ADD . ./
 RUN pip3 install -r requirements.txt && \
     pip3 install . && \
-    wget https://www.csie.ntu.edu.tw/\~cjlin/libsvm/libsvm-3.22.tar.gz && \
-    tar -zxvf libsvm-3.22.tar.gz && \
-    cd libsvm-3.22 && \
+    wget https://www.csie.ntu.edu.tw/\~cjlin/libsvm/libsvm-3.24.tar.gz && \
+    tar -zxvf libsvm-3.24.tar.gz && \
+    cd libsvm-3.24 && \
     make clean && make && \
     cp svm-predict svm-train svm-scale /usr/local/bin/ && \
     chmod +x /usr/local/bin/*
