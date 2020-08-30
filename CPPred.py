@@ -1,3 +1,5 @@
+#! /usr/bin/env python3
+
 import os, sys
 from cppred import CTD
 from cppred import ProtParam as PP
