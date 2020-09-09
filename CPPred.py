@@ -87,13 +87,15 @@ def path_file(path, f):
 
 
 def predict(range_file, model_file, libsvm_bin, tmpdir):
-    svm_scale = path_file(libsvm_bin, 'svm-scale') + ' -r ' + range_file + ' ' + path_file(tmpdir, 'test.f_svm ') + \
-                ' > ' + path_file(tmpdir, 'test.scaled ')
+    svm_scale = path_file(libsvm_bin, 'svm-scale') + ' -r ' + range_file + ' ' + \
+                ' -s ' + path_file(tmpdir, 'test.scaled ') + path_file(tmpdir, 'test.f_svm ')
+
     # os.system(libsvm_bin + '/svm-scale -r ' + range_file + ' test.f_svm  > test.scaled ')
     # os.system(svm_scale)
     print_and_run(svm_scale)
-    svm_preict = path_file(libsvm_bin, 'svm-predict') + ' -b 1 ' + path_file(tmpdir, 'test.scaled') + ' ' \
-                 + model_file + path_file(tmpdir, 'tmp.txt') + ' >  ' + path_file(tmpdir, 'tmp2.txt')
+    svm_preict = path_file(libsvm_bin, 'svm-predict ') + ' -b 1 ' + path_file(tmpdir, 'test.scaled') + \
+                 ' -s ' + path_file(tmpdir, 'tmp2.txt ') \
+                 + model_file + path_file(tmpdir, 'tmp.txt ')
     # os.system(libsvm_bin + '/svm-predict -b 1 test.scaled ' + model_file + ' tmp.txt >  tmp2.txt')
     print_and_run(svm_preict)
 
@@ -151,7 +153,7 @@ def main():
     if None is not args.range:
         r_f = args.range
     output_feature(args.RNA_file, h_f, args.species, tmp.name)
-    os.system('head '+path_file(tmp.name, 'test.f_svm'))
+    os.system('head ' + path_file(tmp.name, 'test.f_svm'))
     predict(r_f, m_f, args.libsvm_bin, tmp.name)
     merge(tmp.name, args.outfile)
     deleted(tmp)
