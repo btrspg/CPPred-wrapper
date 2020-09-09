@@ -79,7 +79,7 @@ def output_feature(seq_file, hex_file, species, tmpdir):
 
 def print_and_run(cmd: str):
     print("CMD:" + cmd)
-    check_call([cmd], shell=True)
+    check_call(cmd.split(' '), shell=True)
 
 
 def path_file(path, f):
