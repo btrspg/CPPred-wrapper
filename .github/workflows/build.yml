@@ -28,3 +28,4 @@ jobs:
       run: |
         docker run -v `pwd`:`pwd` -w `pwd` newbuild bash -c "CPPred.py -i data/Human_coding_RNA_test.fa -spe Human -o Human_coding.result "
         head Human_coding.result
+        ls -R /tmp
