@@ -102,7 +102,7 @@ def predict(range_file, model_file, libsvm_bin, tmpdir):
     print_and_run(svm_preict)
 
     coding_poten = open(path_file(tmpdir, 'coding_potential'), 'w')
-    coding_poten.write("\t".join(map(str, ["table", "coding_potential"])) + "\n")
+    coding_poten.write("\t".join(map(str, ["table", path_file(tmpdir, 'coding_potential')])) + "\n")
 
     for line in open(path_file(tmpdir, 'tmp.txt'), 'r').readlines():
         if line[0] == "l":
