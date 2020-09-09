@@ -1,14 +1,22 @@
 #! /usr/bin/env python3
 
-import os, sys
-from cppred import CTD
-from cppred import ProtParam as PP
-from cppred import ORF_length as len
-import Bio.SeqIO as Seq
-from cppred import fickett
-from cppred import FrameKmer
-from cppred.paras import get_model_range_hexamer
 import argparse as agp
+import os
+import tempfile
+from subprocess import check_call
+
+import Bio.SeqIO as Seq
+
+from cppred import CTD
+from cppred import FrameKmer
+from cppred import ORF_length as len
+from cppred import ProtParam as PP
+from cppred import fickett
+from cppred.paras import get_model_range_hexamer
+
+
+def get_tempdir():
+    return tempfile.TemporaryDirectory()
 
 
 def coding_nocoding_potential(input_file):
@@ -22,9 +30,9 @@ def coding_nocoding_potential(input_file):
     return coding, noncoding
 
 
-def output_feature(seq_file, hex_file, species):
-    tmp = open('test.f_svm', 'w')
-    feature = open('test.feature', 'w')
+def output_feature(seq_file, hex_file, species, tmpdir):
+    tmp = open(path_file(tmpdir, 'test.f_svm'), 'w')
+    feature = open(path_file(tmpdir, 'test.feature'), 'w')
     out_label = 1
     coding, noncoding = coding_nocoding_potential(hex_file)
     if species == "Human":
@@ -53,28 +61,45 @@ def output_feature(seq_file, hex_file, species):
                                         [seqid, inte_fe, Cov, insta_fe, T2, C0, PI_fe, Len, AC, T0, G0, C2, A4, G2, TG,
                                          A0, TC, G1, C3, T3, A1, GC, T1, G4, C1, G3, A3, gra_fe, hexamer, C4, AG,
                                          fickett_fe, A2, T4, C, G, A, T])) + "\n")
-        if species == "Integrated":
+        elif species == "Integrated":
             tem = [Cov, inte_fe, GC, insta_fe, Len, T0, fickett_fe, G2, C3, PI_fe, A3, C1, G3, hexamer, TG, G1, TC, A0,
                    A1, AC, C2, G0, T4, C0, A4, G, A2, T, T3, G4, C4, gra_fe, T2, AG, AT, T1, A, C]
             feature.write("\t".join(map(str,
                                         [seqid, Cov, inte_fe, GC, insta_fe, Len, T0, fickett_fe, G2, C3, PI_fe, A3, C1,
                                          G3, hexamer, TG, G1, TC, A0, A1, AC, C2, G0, T4, C0, A4, G, A2, T, T3, G4, C4,
                                          gra_fe, T2, AG, AT, T1, A, C])) + "\n")
-        tmp.write(str(out_label)+'\n')
+        else:
+            raise ValueError('Species could only be Human or Integrated, not ' + species)
+        tmp.write(str(out_label) + '\n')
         for label, item in enumerate(tem):
-            tmp.write(str(label + 1) + ':' + str(item)+'\n')
+            tmp.write(str(label + 1) + ':' + str(item) + '\n')
         tmp.write('\n')
     tmp.close()
 
 
-def predict(range_file, model_file, libsvm_bin):
-    os.system(libsvm_bin + '/svm-scale -r ' + range_file + ' test.f_svm  > test.scaled ')
-    os.system(libsvm_bin + '/svm-predict -b 1 test.scaled ' + model_file + ' tmp.txt >  tmp2.txt')
+def print_and_run(cmd: str):
+    print("CMD:" + cmd)
+    check_call(cmd, shell=True)
 
-    coding_poten = open('coding_potential', 'w')
+
+def path_file(path, f):
+    return os.path.join(path, f)
+
+
+def predict(range_file, model_file, libsvm_bin, tmpdir):
+    svm_scale = path_file(libsvm_bin, 'svm-scale') + ' -r ' + range_file + ' ' + path_file(tmpdir, 'test.f_svm ') + \
+                ' > ' + path_file(tmpdir, 'test.scaled ')
+    # os.system(libsvm_bin + '/svm-scale -r ' + range_file + ' test.f_svm  > test.scaled ')
+    print_and_run(svm_scale)
+    svm_preict = path_file(libsvm_bin, 'svm-predict') + ' -b 1 ' + path_file(tmpdir, 'test.scaled') + ' ' \
+                 + model_file + path_file(tmpdir, 'tmp.txt') + ' >  ' + path_file(tmpdir, 'tmp2.txt')
+    # os.system(libsvm_bin + '/svm-predict -b 1 test.scaled ' + model_file + ' tmp.txt >  tmp2.txt')
+    print_and_run(svm_preict)
+
+    coding_poten = open(path_file(tmpdir, 'coding_potential'), 'w')
     coding_poten.write("\t".join(map(str, ["table", "coding_potential"])) + "\n")
 
-    for line in open('tmp.txt').readlines():
+    for line in open(path_file(tmpdir, 'tmp.txt'), 'r').readlines():
         if line[0] == "l":
             continue
         coding_potential = line.split(" ")[1]
@@ -84,14 +109,24 @@ def predict(range_file, model_file, libsvm_bin):
             coding_poten.write("\t".join(map(str, ["noncoding", coding_potential])) + "\n")
 
 
-def merge(output_file):
-    os.system("paste test.feature coding_potential >" + output_file)
+def merge(tmpdir, output_file):
+    test_feature = path_file(tmpdir, 'test.feature')
+    coding_potential = path_file(tmpdir, 'coding_potential')
+    cmd = 'paste {tf} {cp} > {outfile}'.format(
+        tf=test_feature,
+        cp=coding_potential,
+        outfile=output_file
+    )
+    print_and_run(cmd)
+    # print("CMD:" + "paste test.feature coding_potential >" + output_file)
+    # os.system("paste test.feature coding_potential >" + output_file)
 
 
-def deleted():
-    os.system("rm test.*")
-    os.system("rm coding_potential")
-    os.system("rm tmp*")
+def deleted(tmpdir):
+    tmpdir.cleanup()
+    # os.system("rm test.*")
+    # os.system("rm coding_potential")
+    # os.system("rm tmp*")
 
 
 def main():
@@ -105,6 +140,8 @@ def main():
     parser.add_argument('-o', '--outfile', help="output file")
     parser.add_argument('--libsvm-bin', default='/usr/local/bin', help='libsvm bin')
     args = parser.parse_args()
+    tmp = get_tempdir()
+    print("temporary direction: " + tmp.name)
     m_f, r_f, h_f = get_model_range_hexamer(args.species)
     if None is not args.hexmar:
         h_f = args.hexmar
@@ -112,10 +149,10 @@ def main():
         m_f = args.model
     if None is not args.range:
         r_f = args.range
-    output_feature(args.RNA_file, h_f, args.species)
-    predict(r_f, m_f, args.libsvm_bin)
-    merge(args.outfile)
-    deleted()
+    output_feature(args.RNA_file, h_f, args.species, tmp)
+    predict(r_f, m_f, args.libsvm_bin, tmp)
+    merge(tmp, args.outfile)
+    deleted(tmp)
 
 
 if __name__ == '__main__':
