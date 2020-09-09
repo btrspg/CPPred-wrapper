@@ -149,9 +149,9 @@ def main():
         m_f = args.model
     if None is not args.range:
         r_f = args.range
-    output_feature(args.RNA_file, h_f, args.species, tmp)
-    predict(r_f, m_f, args.libsvm_bin, tmp)
-    merge(tmp, args.outfile)
+    output_feature(args.RNA_file, h_f, args.species, tmp.name)
+    predict(r_f, m_f, args.libsvm_bin, tmp.name)
+    merge(tmp.name, args.outfile)
     deleted(tmp)
 
 
