@@ -151,6 +151,7 @@ def main():
     if None is not args.range:
         r_f = args.range
     output_feature(args.RNA_file, h_f, args.species, tmp.name)
+    os.system('head '+path_file(tmp.name, 'test.f_svm'))
     predict(r_f, m_f, args.libsvm_bin, tmp.name)
     merge(tmp.name, args.outfile)
     deleted(tmp)
