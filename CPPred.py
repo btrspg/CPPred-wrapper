@@ -91,7 +91,8 @@ def predict(range_file, model_file, libsvm_bin, tmpdir):
                 ' -s ' + path_file(tmpdir, 'test.scaled ') + path_file(tmpdir, 'test.f_svm ')
 
     # os.system(libsvm_bin + '/svm-scale -r ' + range_file + ' test.f_svm  > test.scaled ')
-    # os.system(svm_scale)
+    os.system(svm_scale)
+    os.system('ls -R '+tmpdir)
     print_and_run(svm_scale)
     svm_preict = path_file(libsvm_bin, 'svm-predict ') + ' -b 1 ' + path_file(tmpdir, 'test.scaled') + \
                  ' -s ' + path_file(tmpdir, 'tmp2.txt ') \
