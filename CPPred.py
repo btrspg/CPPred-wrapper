@@ -1,11 +1,13 @@
 #! /usr/bin/env python3
 
+
 import argparse as agp
 import os
 import tempfile
 from subprocess import check_call
 
 import Bio.SeqIO as Seq
+
 
 from cppred import CTD
 from cppred import FrameKmer
@@ -68,11 +70,13 @@ def output_feature(seq_file, hex_file, species, tmpdir):
                                         [seqid, Cov, inte_fe, GC, insta_fe, Len, T0, fickett_fe, G2, C3, PI_fe, A3, C1,
                                          G3, hexamer, TG, G1, TC, A0, A1, AC, C2, G0, T4, C0, A4, G, A2, T, T3, G4, C4,
                                          gra_fe, T2, AG, AT, T1, A, C])) + "\n")
+
         else:
             raise ValueError('Species could only be Human or Integrated, not ' + species)
         tmp.write(str(out_label))
         for label, item in enumerate(tem):
             tmp.write(' ' + str(label + 1) + ':' + str(item))
+
         tmp.write('\n')
     tmp.close()
 
