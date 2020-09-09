@@ -87,16 +87,17 @@ def path_file(path, f):
 
 
 def predict(range_file, model_file, libsvm_bin, tmpdir):
-    svm_scale = path_file(libsvm_bin, 'svm-scale') + ' -r ' + range_file + ' ' + \
-                ' -s ' + path_file(tmpdir, 'test.scaled ') + path_file(tmpdir, 'test.f_svm ')
+    svm_scale = path_file(libsvm_bin, 'svm-scale') + ' -r ' + range_file + ' ' \
+                + path_file(tmpdir, 'test.f_svm ') \
+                + ' > ' + path_file(tmpdir, 'test.scaled ')
 
     # os.system(libsvm_bin + '/svm-scale -r ' + range_file + ' test.f_svm  > test.scaled ')
     os.system(svm_scale)
-    os.system('ls -R '+tmpdir)
+    os.system('ls -R ' + tmpdir)
     print_and_run(svm_scale)
-    svm_preict = path_file(libsvm_bin, 'svm-predict ') + ' -b 1 ' + path_file(tmpdir, 'test.scaled') + \
-                 ' -s ' + path_file(tmpdir, 'tmp2.txt ') \
-                 + model_file + path_file(tmpdir, 'tmp.txt ')
+    svm_preict = path_file(libsvm_bin, 'svm-predict ') + ' -b 1 ' + path_file(tmpdir, 'test.scaled') \
+                 + model_file + path_file(tmpdir, 'tmp.txt ') \
+                 + ' > ' + path_file(tmpdir, 'tmp2.txt ')
     # os.system(libsvm_bin + '/svm-predict -b 1 test.scaled ' + model_file + ' tmp.txt >  tmp2.txt')
     print_and_run(svm_preict)
 
