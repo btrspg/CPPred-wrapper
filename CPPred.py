@@ -70,9 +70,9 @@ def output_feature(seq_file, hex_file, species, tmpdir):
                                          gra_fe, T2, AG, AT, T1, A, C])) + "\n")
         else:
             raise ValueError('Species could only be Human or Integrated, not ' + species)
-        tmp.write(str(out_label) + '\n')
+        tmp.write(str(out_label))
         for label, item in enumerate(tem):
-            tmp.write(str(label + 1) + ':' + str(item) + '\n')
+            tmp.write(' '+str(label + 1) + ':' + str(item))
         tmp.write('\n')
     tmp.close()
 
